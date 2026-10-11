@@ -1,0 +1,361 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Tabcake design system — ../assets/design.md v4.8
+   The light `:root` block below is a byte-for-byte copy of tabcake_dashboard/app/globals.css, so a
+   diff of the two shows any drift (the chart tokens come along unused). Never introduce a colour,
+   radius or type size that is not in design.md; add it there first, then to the dashboard, then
+   here (§13).
+
+   There is no `cn` / tailwind-merge in this repo — class names are template strings — so §13's
+   "silent delete" trap does not apply. If a merge helper ever arrives, register every `--text-*`
+   and colour token below in it, the way the dashboard's lib/utils.ts does.
+
+   The palette is the logo board's (assets/logo/Tabcake Logo.html). No Tailwind ramp matches it,
+   so no screen writes a ramp class: every colour is a semantic token below (§3, Rules).
+
+   Two themes since 0.34.0 (design.md 5.5): the dark block below follows the system, because the
+   popup has no settings screen to hold a choice. Unlike the dashboard's, it names **every** colour
+   token: this light block is still the 4.x palette (design.md 5.0 notes it), and a dark block that
+   only overrode the dashboard's list would leave 4.x literals, a white card and white-on-red text,
+   showing through.
+--------------------------------------------------------------------------- */
+
+@theme inline {
+  /* --- semantic colour (design.md §3) ------------------------------------ */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle: var(--subtle);
+
+  /* Blue is the one chromatic accent: the focus ring, a text link, a selection. Never decoration.
+     Ember is the logo's overlap and nothing in the interface. */
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-strong: var(--accent-strong);
+
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-surface: var(--destructive-surface);
+  --color-destructive-strong: var(--destructive-strong);
+
+  --color-live: var(--live);
+  --color-live-foreground: var(--live-foreground);
+  --color-live-surface: var(--live-surface);
+  --color-live-border: var(--live-border);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-scrim: var(--scrim);
+
+  /* The mark's own colours (design.md §3), for the logo and the loader. */
+  --color-tomato: var(--tomato);
+  --color-butter: var(--butter);
+  --color-ember: var(--ember);
+
+  /* --- type (design.md §2), faces bundled in main.tsx -------------------- */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* The wordmark and nothing else — design.md §4. */
+  --font-wordmark: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  /* Six sizes: 12 14 15 16 18 24 (design.md 4.2). Prose is `body`/`read` at 16; chrome is
+     `ui` at 14; a card's h3 and its `read-sm` summary share 15. Nothing is 10, 11, 13 or 20. */
+  --text-h1: 1.5rem;
+  --text-h1--line-height: 1.25;
+  --text-h1--letter-spacing: -0.01em;
+  /* A stat figure. The same size as h1, so a reference, not a second value. */
+  --text-title: var(--text-h1);
+  --text-title--line-height: var(--text-h1--line-height);
+  --text-title--letter-spacing: var(--text-h1--letter-spacing);
+  --text-h2: 1.125rem;
+  --text-h2--line-height: 1.35;
+  /* 15/22, set 600: a card title has to outweigh the 15/23 serif under it. */
+  --text-h3: 0.9375rem;
+  --text-h3--line-height: calc(22 / 15);
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  /* Serif reading, and only that. */
+  --text-read: 1rem;
+  --text-read--line-height: 1.65;
+  /* A summary on a card, two lines under its h3. The only serif below 16. */
+  --text-read-sm: 0.9375rem;
+  --text-read-sm--line-height: calc(23 / 15);
+  --text-ui: 0.875rem;
+  --text-ui--line-height: 1.4;
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.4;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: calc(16 / 12);
+  --text-eyebrow--letter-spacing: 0.4px;
+
+  /* --- shape & motion (design.md §6) ------------------------------------- */
+  /* Controls and menus 8, cards 12. 6 retired in 4.2. */
+  --radius-sm: var(--radius-md); /* retired in 4.2: write rounded-md */
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Cards are flat. One shadow in the system, and it is for overlays. */
+  --shadow-modal: 0 8px 32px rgb(var(--ink-rgb) / 0.12);
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* --- product tokens, light (design.md §3) -------------------------------
+   `primary` is the ink and it means *committed*: the submit button, a switch
+   that is on. `accent-strong` is blue and it means *where you are*: the
+   focus ring, a link, a selected row. The chrome itself is warm and
+   monochrome, so neither has to compete to be seen.
+------------------------------------------------------------------------- */
+:root {
+  /* The logo board's five colours. Everything below is built from these or
+     from the neutrals, and a repeat is a reference, never the hex again. */
+  --ink-rgb: 28 23 20; /* Ink #1C1714. Channels, so the scrim and shadow can take an alpha. */
+  --tomato: #f0502e;
+  --butter: #f5c542;
+  --ember: #c7361a;
+
+  --background: #faf6ee; /* Cream */
+  --foreground: rgb(var(--ink-rgb)); /* 17.77:1 on white */
+  --card: #ffffff;
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
+  --secondary: var(--background); /* the nested fill: Cream on a white card */
+  --secondary-foreground: var(--foreground);
+  --muted: #f1eadd; /* hover surfaces */
+  /* 5.77:1 on white and 4.82:1 on --muted, the surface text gets read on. */
+  --muted-foreground: #6e645c;
+  /* 2.66:1. Icons, dividers and dots. Never text. */
+  --subtle: #a89d93;
+
+  --accent: #eaf0fb;
+  --accent-foreground: var(--foreground); /* one blue: selection is the tint with ink (4.2) */
+  --accent-strong: #2b59c3; /* Harbour blue, 6.33:1 on white, 5.29:1 on --muted */
+
+  --success: #15803d; /* green-700. Always paired with a check icon. */
+  --success-surface: #f0fdf4;
+  /* §3: warning shares Butter's family and is transient only — the live dot
+     stays the one *persistent* yellow element in a viewport. */
+  --warning: #b45309;
+  --warning-surface: #fffbeb;
+  --destructive: #dc2626; /* red-600. red-500 misses AA on white. */
+  --destructive-foreground: #ffffff;
+  --destructive-surface: #fef2f2;
+  --destructive-strong: #b91c1c; /* red-700, for text on the surface */
+
+  /* §3: one live signal per viewport, and only for live capture. */
+  --live: var(--live-foreground); /* the dot: 5.4:1 on cream. Butter was 1.5:1 (4.2) */
+  --live-foreground: #8a5a00; /* the yellow you write with, 5.34:1 on the surface */
+  --live-surface: #fdf3d3;
+  --live-border: #f5de92;
+
+  --border: #e6ded1; /* one hairline, one weight, 1px */
+  --border-strong: #dcd2c2; /* hover and active edges */
+  --input: var(--border-strong); /* a field needs an edge you can find unfocused */
+  --ring: var(--accent-strong);
+  --scrim: rgb(var(--ink-rgb) / 0.3); /* one backdrop, and it does not blur */
+
+  --chart-1: var(--foreground);
+  --chart-2: var(--subtle);
+  --chart-3: var(--accent-strong);
+  --chart-4: var(--live);
+  --chart-5: var(--border);
+  color-scheme: light;
+}
+
+/* design.md §3, "The palette, dark" (5.5). The same values as the dashboard's `.dark` block, every
+   ratio measured there. The mark's three colours and `--ink-rgb` (the overlay shadow) stay. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: #0f0f11;
+    --foreground: #fafafa;
+    --card: var(--background);
+    --primary: var(--accent-strong);
+    --primary-foreground: var(--background);
+    --secondary: #18181b;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --subtle: #5a5a63;
+
+    --accent: #1e1b4b;
+    --accent-strong: #818cf8;
+
+    --success: #4ade80;
+    --success-surface: #052e16;
+    --warning: #fbbf24;
+    --warning-surface: #2b1a04;
+    --destructive: #f87171;
+    --destructive-foreground: var(--background);
+    --destructive-surface: #2a0f0f;
+    --destructive-strong: #fca5a5;
+
+    --live: #f59e0b;
+    --live-foreground: #fcd34d;
+    --live-surface: #2b1d05;
+    --live-border: #78350f;
+
+    --border: #2e2e33;
+    --border-strong: #3f3f46;
+    --scrim: rgb(0 0 0 / 0.6);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* design.md §11: the product's only focus ring, declared once. No component draws its own. */
+  :focus-visible {
+    @apply outline-ring outline-2 outline-offset-2;
+  }
+}
+
+/* Outside every layer, on purpose. Chromium injects its own stylesheet into extension pages —
+   `body { font-family: "Segoe UI", Tahoma, sans-serif; font-size: 75% }` on Windows — as an
+   unlayered author sheet, and an unlayered rule beats anything inside `@layer base` whatever its
+   specificity. So the `html { font-sans }` above was inherited and then overridden, and Inter was
+   bundled, declared and never used until 0.19.0. `html body` outranks the injected `body`.
+   ponytail: the injected 75% font-size is left alone; the popup's type is re-done in a later phase. */
+html body {
+  @apply font-sans;
+}
+
+@utility eyebrow {
+  /* design.md §2 — the one uppercase style in the system. */
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  letter-spacing: var(--text-eyebrow--letter-spacing);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+@utility wordmark {
+  /* design.md §4 — the word "tabcake" in the lockup, and nothing else. The
+     size comes from the mark beside it (brand.tsx), so it is not set here. */
+  font-family: var(--font-wordmark);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+@utility numeric {
+  /* design.md §2. Every figure: proportional digits change width as they change value, so a live
+     counter jitters. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   The overlap (design.md §1) — the loader. The back tab slides up-left and
+   back, so the Ember overlap, a clip of the back tab by the front one, shrinks
+   and grows with it. 960ms is four 240ms steps. The translate is in the mark's
+   own viewBox units (120 wide). Replaces every spinner.
+--------------------------------------------------------------------------- */
+@keyframes tabcake-overlap {
+  from {
+    transform: translate(-14px, -12px);
+  }
+}
+
+.overlap-back {
+  animation: tabcake-overlap 960ms var(--ease-out) infinite alternate;
+}
+
+/* design.md §6: a thing representing a captured page enters by rising 8px while fading in. */
+@keyframes tabcake-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.page-in {
+  animation: tabcake-page-in 200ms var(--ease-out) both;
+}
+
+/* A loader waits 300ms before it shows, so an answer that comes quickly draws nothing, and a slow
+   one draws its words (audit #30). A delay, not a movement: reduced motion keeps it. The
+   dashboard's globals.css has the same rule. */
+@keyframes tabcake-appear {
+  from {
+    opacity: 0;
+  }
+}
+
+.appear-late {
+  animation: tabcake-appear 120ms var(--ease-out) 300ms both;
+}
+
+/* design.md §6: drop the translation, collapse every duration to 120ms. The loader holds still
+   as the whole mark, and the live dot stops pulsing. */
+@media (prefers-reduced-motion: reduce) {
+  .overlap-back,
+  .page-in,
+  .live-dot {
+    animation: none;
+    opacity: 1;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 120ms !important;
+    transition-duration: 120ms !important;
+  }
+}
+
+/* The live capture dot's 2s pulse (design.md §6). The only animated colour in the popup. */
+@keyframes tabcake-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.live-dot {
+  animation: tabcake-live-pulse 2s var(--ease-out) infinite;
+}
+
+/* design.md §6, §11: the focus ring does not animate. Tailwind's `transition-colors` and
+   `transition` both include `outline-color`, so the one ring faded in over 120ms on every control
+   that eases its colours — mid-fade it was a blue-grey (audit I-04). The same lists without it,
+   unlayered so they win over the utilities layer, once, instead of at every call site. */
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+    --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+}
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+    --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform,
+    translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display,
+    content-visibility, overlay, pointer-events;
+}
